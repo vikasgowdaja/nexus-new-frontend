@@ -99,6 +99,47 @@ export const getProjects = async () => {
   return data
 }
 
+export const createProject = async (payload) => {
+  const { data } = await api.post('/projects', payload)
+  return data
+}
+
+export const uploadProjectsFile = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const { data } = await api.post('/projects/upload', formData)
+  return data
+}
+
+export const previewProjectsFile = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  const { data } = await api.post('/projects/upload/preview', formData)
+  return data
+}
+
+export const downloadProjectsTemplate = async () => {
+  const response = await api.get('/projects/template', {
+    responseType: 'blob'
+  })
+
+  const blobUrl = window.URL.createObjectURL(new Blob([response.data]))
+  const link = document.createElement('a')
+  link.href = blobUrl
+  link.setAttribute('download', 'project-upload-template.xlsx')
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  window.URL.revokeObjectURL(blobUrl)
+}
+
+export const reconcileProjects = async () => {
+  const { data } = await api.post('/teams/admin/reconcile-projects')
+  return data
+}
+
 // Admin: Delete a team
 export const deleteTeam = async (id) => {
   const { data } = await api.delete(`/teams/${id}`)
