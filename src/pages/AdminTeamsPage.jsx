@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { deleteTeam, getProjects, getTeams, updateTeam } from '../services/api'
 import AdminEditTeamModal from '../components/AdminEditTeamModal'
 import { AdminProjectsManager } from '../components/AdminProjectsManager'
+import { AdminPasswordSecurityPanel } from '../components/AdminPasswordSecurityPanel'
 import { PageShell } from '../components/PageShell'
 
 const AdminTeamsPage = () => {
@@ -123,6 +124,7 @@ const AdminTeamsPage = () => {
         )}
 
         <AdminProjectsManager onProjectsChanged={refreshAdminData} />
+        <AdminPasswordSecurityPanel />
 
         {loading ? (
           <div className="mt-6 rounded-xl border border-white/20 bg-black/20 px-4 py-5 text-cyan-100">
@@ -137,6 +139,7 @@ const AdminTeamsPage = () => {
                   <th className="px-3 py-3 text-left">Lead</th>
                   <th className="px-3 py-3 text-left">College</th>
                   <th className="px-3 py-3 text-left">Members</th>
+                  <th className="px-3 py-3 text-left">Idea Request</th>
                   <th className="px-3 py-3 text-left">Actions</th>
                 </tr>
               </thead>
@@ -163,6 +166,18 @@ const AdminTeamsPage = () => {
                           </div>
                         ))}
                       </div>
+                    </td>
+                    <td className="px-3 py-3">
+                      {team.customProjectIdea?.title ? (
+                        <div className="rounded-md border border-amber-300/30 bg-amber-400/10 px-2 py-1 text-xs text-amber-100">
+                          <div className="font-semibold text-amber-50">{team.customProjectIdea.title}</div>
+                          <div className="mt-0.5 uppercase tracking-wide text-amber-200/90">
+                            {team.customProjectIdea.status || 'pending'}
+                          </div>
+                        </div>
+                      ) : (
+                        <span className="text-cyan-100/70">-</span>
+                      )}
                     </td>
                     <td className="px-3 py-3">
                       <div className="flex gap-2">
