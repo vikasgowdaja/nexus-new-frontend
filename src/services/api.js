@@ -188,6 +188,46 @@ export const forceResetTeamPassword = async (teamId) => {
   return data
 }
 
+export const submitTeamProfileUpdateRequest = async (payload, token) => {
+  const activeToken = token || getTeamToken()
+  const { data } = await api.post('/teams/team/update-request', payload, {
+    headers: {
+      Authorization: `Bearer ${activeToken}`
+    }
+  })
+
+  if (data?.team) {
+    setTeamSession({ token: activeToken, team: data.team })
+  }
+
+  return data
+}
+
+export const recallTeamProfileUpdateRequest = async (token) => {
+  const activeToken = token || getTeamToken()
+  const { data } = await api.post('/teams/team/update-request/recall', null, {
+    headers: {
+      Authorization: `Bearer ${activeToken}`
+    }
+  })
+
+  if (data?.team) {
+    setTeamSession({ token: activeToken, team: data.team })
+  }
+
+  return data
+}
+
+export const reviewTeamProfileUpdateRequest = async (teamId, payload) => {
+  const { data } = await api.post(`/teams/admin/${teamId}/update-request/review`, payload)
+  return data
+}
+
+export const reviewTeamCustomProjectIdea = async (teamId, payload) => {
+  const { data } = await api.post(`/teams/admin/${teamId}/custom-idea/review`, payload)
+  return data
+}
+
 export const getAdminMe = async () => {
   const { data } = await api.get('/auth/me')
   return data

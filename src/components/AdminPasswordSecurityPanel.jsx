@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { forceResetTeamPassword, getTeamPasswordActivity } from '../services/api'
 import { formatDateTime } from '../utils/date'
+import { ActionDialog } from './ActionDialog'
 
 export function AdminPasswordSecurityPanel() {
   const [teams, setTeams] = useState([])
@@ -8,6 +9,7 @@ export function AdminPasswordSecurityPanel() {
   const [workingTeamId, setWorkingTeamId] = useState('')
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+  const [confirmTeam, setConfirmTeam] = useState(null)
 
   const loadActivity = async ({ showLoader = false } = {}) => {
     if (showLoader) {
@@ -29,22 +31,27 @@ export function AdminPasswordSecurityPanel() {
   }, [])
 
   const handleForceReset = async (team) => {
-    if (!window.confirm(`Force reset password for ${team.teamName}?`)) {
+    setConfirmTeam(team)
+  }
+
+  const runForceReset = async () => {
+    if (!confirmTeam) {
       return
     }
 
-    setWorkingTeamId(team.id)
+    setWorkingTeamId(confirmTeam.id)
     setError('')
     setMessage('')
 
     try {
-      const response = await forceResetTeamPassword(team.id)
+      const response = await forceResetTeamPassword(confirmTeam.id)
       setMessage(response.message || 'Team password reset to default successfully')
       await loadActivity()
     } catch (requestError) {
       setError(requestError.response?.data?.message || 'Failed to force reset team password')
     } finally {
       setWorkingTeamId('')
+      setConfirmTeam(null)
     }
   }
 
@@ -139,6 +146,17 @@ export function AdminPasswordSecurityPanel() {
           </table>
         </div>
       )}
+
+      <ActionDialog
+        isOpen={Boolean(confirmTeam)}
+        title="Force Reset Team Password"
+        message={confirmTeam ? `Force reset password for ${confirmTeam.teamName}?` : ''}
+        confirmLabel="Force Reset"
+        confirmTone="amber"
+        loading={Boolean(workingTeamId)}
+        onCancel={() => setConfirmTeam(null)}
+        onConfirm={runForceReset}
+      />
     </section>
   )
 }
